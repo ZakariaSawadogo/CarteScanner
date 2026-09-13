@@ -32,10 +32,11 @@ class ScanRepository(private val appDao: AppDao) {
         name: String?,
         surname: String?,
         orgName: String?,
-        phone: String?
+        phone: String?,
+        qrCode: String?
     ) {
         val contactId = appDao.insertContact(
-            ContactEntity(tel = phone, linkedin = null, location = null, twitter = null, whatsapp = null, facebook = null, others = null)
+            ContactEntity(tel = phone, linkedin = null, location = null, twitter = null, whatsapp = null, facebook = null, others = null, qrCodeText = qrCode)
         )
 
         var orgId: Long? = null
@@ -58,5 +59,36 @@ class ScanRepository(private val appDao: AppDao) {
         if (imageToUpdate != null) {
             appDao.updateImage(imageToUpdate.copy(processed = true))
         }
+    }
+
+    /**
+     * Exécute le pipeline complet : extraction OCR, parsing des champs et persistance en base.
+     *
+     * @param imageId L'identifiant de l'enregistrement dans tbl_image.
+     * @param imagePath Le chemin physique du fichier à analyser.
+     * @param ocrManager Instance pour l'extraction de texte.
+     * @param parser Instance pour l'analyse lexicale.
+     */
+    suspend fun processImagePipeline(
+        imageId: Long,
+        imagePath: String,
+        ocrManager: com.example.cartescanner.ocr.OcrManager,
+        parser: com.example.cartescanner.ocr.CardParser
+    ) {
+        // 1. Extraction OCR
+        val result = ocrManager.extractFromImage(imagePath)
+
+        // 2. Structuration lexicale
+        val parsedData = parser.parse(rawText=result.rawText, qrCode = result.qrCode)
+
+        // 3. Persistance dans les tables relationnelles
+        saveExtractedData(
+            imageId = imageId,
+            name = parsedData.name,
+            surname = parsedData.surname,
+            orgName = parsedData.organisationName,
+            phone = parsedData.phone,
+            qrCode = parsedData.qrCodeText
+        )
     }
 }

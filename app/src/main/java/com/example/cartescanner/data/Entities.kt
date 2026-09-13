@@ -28,7 +28,8 @@ data class ContactEntity(
     val twitter: String?,
     val whatsapp: String?,
     val facebook: String?,
-    val others: String?
+    val others: String?,
+    val qrCodeText: String?
 )
 
 /**

@@ -7,7 +7,8 @@ espressoCore = "3.7.0"
 appcompat = "1.8.0"
 material = "1.14.0"
 room = "2.8.5"
-mlkit = "19.0.1"
+mlkit-text = "19.0.1"
+mlkit-barcode = "18.3.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -19,8 +20,8 @@ material = { group = "com.google.android.material", name = "material", version.r
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
-mlkit-text = { group = "com.google.android.gms", name = "play-services-mlkit-text-recognition", version.ref = "mlkit" }
-
+play-services-mlkit-text = { group = "com.google.android.gms", name = "play-services-mlkit-text-recognition", version.ref = "mlkit-text" }
+play-services-mlkit-barcode = { group = "com.google.android.gms", name = "play-services-mlkit-barcode-scanning", version.ref = "mlkit-barcode" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 
