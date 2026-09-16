@@ -1,19 +1,15 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.ksp)
 }
 
 android {
     namespace = "com.example.cartescanner"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
-
+    compileSdk = 37
     defaultConfig {
         applicationId = "com.example.cartescanner"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
@@ -42,7 +38,12 @@ dependencies {
     implementation(libs.room.ktx)
     implementation(libs.play.services.mlkit.text)
     implementation(libs.play.services.mlkit.barcode)
-    annotationProcessor(libs.room.compiler)
+    implementation(libs.okhttp)
+    implementation(libs.jsoup)
+    implementation(libs.gson)
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    ksp(libs.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)

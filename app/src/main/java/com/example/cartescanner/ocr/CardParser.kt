@@ -1,7 +1,18 @@
 package com.example.cartescanner.ocr
 
 /**
- * Modèle intermédiaire contenant les informations extraites après analyse du texte OCR.
+ * Modele de transfert de donnees (DTO) contenant les informations extraites localement.
+ * Ces donnees servent de socle de base (hors-ligne) avant la correction sementique par l'IA.
+ *
+ * @property name Prenom deduit du texte.
+ * @property surname Nom de famille deduit du texte.
+ * @property organisationName Nom de l'entreprise deduit.
+ * @property phone Numero de telephone identifie.
+ * @property email Adresse email identifiee.
+ * @property linkedin Lien LinkedIn identifie.
+ * @property location Localisation (generalement vide a ce stade).
+ * @property others Informations complementaires.
+ * @property qrCodeText Texte brut decode depuis un eventuel QR Code.
  */
 data class ParsedCardData(
     val name: String? = null,
@@ -16,7 +27,8 @@ data class ParsedCardData(
 )
 
 /**
- * Analyse le texte brut pour catégoriser les champs pertinents d'une carte de visite.
+ * Analyseur syntaxique base sur des expressions regulieres (Regex) pour categoriser
+ * le texte brut d'une carte de visite sans necessiter de connexion Internet.
  */
 class CardParser {
 
@@ -25,7 +37,11 @@ class CardParser {
     private val linkedinRegex = Regex("""(?:https?://)?(?:www\.)?linkedin\.com/in/[a-zA-Z0-9_-]+""")
 
     /**
-     * Parse le texte brut et le transforme en objet structuré [ParsedCardData].
+     * Evalue le texte brut et tente d'isoler les champs structurables.
+     *
+     * @param rawText Texte brut genere par l'OCR.
+     * @param qrCode Texte extrait du QR Code (le cas echeant).
+     * @return [ParsedCardData] contenant les donnees isolees localement.
      */
     fun parse(rawText: String, qrCode: String? = null): ParsedCardData {
         val lines = rawText.lines().map { it.trim() }.filter { it.isNotEmpty() }
@@ -35,13 +51,11 @@ class CardParser {
         val phone = lines.firstOrNull { phoneRegex.matches(it) || it.contains(phoneRegex) }
             ?.let { phoneRegex.find(it)?.value?.trim() }
 
-        // Exclusion des lignes techniques déjà identifiées pour isoler nom et organisation
         val contentLines = lines.filter { line ->
             line != phone && line != email && line != linkedin &&
                     !line.contains("@") && !line.startsWith("www.", ignoreCase = true)
         }
 
-        // Heuristique : première ligne valide = identité, deuxième ligne = organisation/titre
         val fullName = contentLines.getOrNull(0)
         val orgCandidate = contentLines.getOrNull(1)
 
@@ -55,14 +69,21 @@ class CardParser {
             email = email,
             linkedin = linkedin,
             location = null,
-            others = rawText.take(500),
+            others = null,
             qrCodeText = qrCode
         )
     }
 
+    /**
+     * Separe une chaine de caracteres representant un nom complet en prenom et nom.
+     *
+     * @param fullName La chaine complete a scinder.
+     * @return Une paire (Prenom, Nom de famille).
+     */
     private fun splitFullName(fullName: String?): Pair<String?, String?> {
         if (fullName.isNullOrBlank()) return Pair(null, null)
         val parts = fullName.split(" ").filter { it.isNotBlank() }
+
         return when {
             parts.size >= 2 -> Pair(parts.first(), parts.drop(1).joinToString(" "))
             parts.size == 1 -> Pair(parts.first(), null)

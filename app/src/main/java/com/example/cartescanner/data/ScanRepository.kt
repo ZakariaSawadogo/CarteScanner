@@ -1,17 +1,21 @@
 package com.example.cartescanner.data
 
+import androidx.room.withTransaction
+
 /**
- * Dépôt (Repository) centralisant la logique d'insertion et de mise à jour des scans.
+ * Depot (Repository) centralisant la logique d'insertion et de mise a jour des scans.
  *
- * @property appDao L'objet d'accès aux données généré par Room.
+ * @property database L'instance de la base de donnees pour gerer les transactions.
  */
-class ScanRepository(private val appDao: AppDao) {
+class ScanRepository(private val database: AppDatabase) {
+
+    private val appDao = database.appDao()
 
     /**
-     * Enregistre le chemin d'une nouvelle image capturée.
+     * Enregistre le chemin d'une nouvelle image capturee.
      *
-     * @param imagePath Le chemin absolu de l'image stockée localement.
-     * @return L'identifiant (ID) de l'image nouvellement insérée.
+     * @param imagePath Le chemin absolu de l'image stockee localement.
+     * @return L'identifiant (ID) de l'image nouvellement inseree.
      */
     suspend fun saveInitialImage(imagePath: String): Long {
         val newImage = ImageEntity(imagePath = imagePath, processed = false, processCompleted = false)
@@ -19,13 +23,7 @@ class ScanRepository(private val appDao: AppDao) {
     }
 
     /**
-     * Sauvegarde les entités structurées extraites par l'OCR et crée les relations.
-     *
-     * @param imageId L'identifiant de l'image source.
-     * @param name Le prénom extrait (optionnel).
-     * @param surname Le nom de famille extrait (optionnel).
-     * @param orgName Le nom de l'organisation extrait (optionnel).
-     * @param phone Le numéro de téléphone extrait (optionnel).
+     * Sauvegarde les entites structurees extraites par l'OCR et cree les relations.
      */
     suspend fun saveExtractedData(
         imageId: Long,
@@ -33,41 +31,67 @@ class ScanRepository(private val appDao: AppDao) {
         surname: String?,
         orgName: String?,
         phone: String?,
-        qrCode: String?
+        email: String?,
+        qrCode: String?,
+        rawText: String?
     ) {
-        val contactId = appDao.insertContact(
-            ContactEntity(tel = phone, linkedin = null, location = null, twitter = null, whatsapp = null, facebook = null, others = null, qrCodeText = qrCode)
-        )
-
-        var orgId: Long? = null
-        if (!orgName.isNullOrEmpty()) {
-            orgId = appDao.insertOrganisation(
-                OrganisationEntity(organisationName = orgName, organisationType = null, contactId = contactId)
+        database.withTransaction {
+            val contactId = appDao.insertContact(
+                ContactEntity(
+                    tel = phone,
+                    email = email,
+                    linkedin = null,
+                    location = null,
+                    twitter = null,
+                    whatsapp = null,
+                    facebook = null,
+                    others = null,
+                    qrCodeText = qrCode
+                )
             )
-        }
 
-        var personId: Long? = null
-        if (!name.isNullOrEmpty() || !surname.isNullOrEmpty()) {
-            personId = appDao.insertPerson(
-                PersonEntity(name = name, surname = surname, position = null, organisationId = orgId, contactId = contactId)
+            var orgId: Long? = null
+            if (!orgName.isNullOrEmpty()) {
+                orgId = appDao.insertOrganisation(
+                    OrganisationEntity(
+                        organisationName = orgName,
+                        organisationType = null,
+                        contactId = contactId
+                    )
+                )
+            }
+
+            var personId: Long? = null
+            if (!name.isNullOrEmpty() || !surname.isNullOrEmpty()) {
+                personId = appDao.insertPerson(
+                    PersonEntity(
+                        name = name,
+                        surname = surname,
+                        position = null,
+                        organisationId = orgId,
+                        contactId = contactId
+                    )
+                )
+            }
+
+            appDao.insertScan(
+                ScanEntity(
+                    imageId = imageId,
+                    personId = personId,
+                    organisationId = orgId,
+                    rawText = rawText
+                )
             )
-        }
 
-        appDao.insertScan(ScanEntity(imageId = imageId, personId = personId, organisationId = orgId))
-
-        val imageToUpdate = appDao.getImageById(imageId)
-        if (imageToUpdate != null) {
-            appDao.updateImage(imageToUpdate.copy(processed = true))
+            val imageToUpdate = appDao.getImageById(imageId)
+            if (imageToUpdate != null) {
+                appDao.updateImage(imageToUpdate.copy(processed = true))
+            }
         }
     }
 
     /**
-     * Exécute le pipeline complet : extraction OCR, parsing des champs et persistance en base.
-     *
-     * @param imageId L'identifiant de l'enregistrement dans tbl_image.
-     * @param imagePath Le chemin physique du fichier à analyser.
-     * @param ocrManager Instance pour l'extraction de texte.
-     * @param parser Instance pour l'analyse lexicale.
+     * Execute le pipeline complet : extraction OCR, parsing des champs et persistance en base.
      */
     suspend fun processImagePipeline(
         imageId: Long,
@@ -75,20 +99,18 @@ class ScanRepository(private val appDao: AppDao) {
         ocrManager: com.example.cartescanner.ocr.OcrManager,
         parser: com.example.cartescanner.ocr.CardParser
     ) {
-        // 1. Extraction OCR
         val result = ocrManager.extractFromImage(imagePath)
+        val parsedData = parser.parse(rawText = result.rawText, qrCode = result.qrCode)
 
-        // 2. Structuration lexicale
-        val parsedData = parser.parse(rawText=result.rawText, qrCode = result.qrCode)
-
-        // 3. Persistance dans les tables relationnelles
         saveExtractedData(
             imageId = imageId,
             name = parsedData.name,
             surname = parsedData.surname,
             orgName = parsedData.organisationName,
             phone = parsedData.phone,
-            qrCode = parsedData.qrCodeText
+            email = parsedData.email,
+            qrCode = parsedData.qrCodeText,
+            rawText = result.rawText
         )
     }
 }

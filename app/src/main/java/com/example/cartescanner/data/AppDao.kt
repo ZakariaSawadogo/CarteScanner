@@ -7,7 +7,7 @@ import androidx.room.Query
 import androidx.room.Update
 
 /**
- * Interface d'accès aux données (DAO) pour manipuler les entités de la base de données.
+ * Interface d'acces aux donnees (DAO) pour manipuler les entites de la base de donnees locale.
  */
 @Dao
 interface AppDao {
@@ -21,14 +21,35 @@ interface AppDao {
     @Update
     suspend fun updateImage(image: ImageEntity)
 
+    @Query("SELECT * FROM tbl_image WHERE processed = 1 AND process_completed = 0")
+    suspend fun getPendingImages(): List<ImageEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertContact(contact: ContactEntity): Long
+
+    @Query("SELECT * FROM tbl_contact WHERE id = :id")
+    suspend fun getContactById(id: Long): ContactEntity?
+
+    @Update
+    suspend fun updateContact(contact: ContactEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrganisation(organisation: OrganisationEntity): Long
 
+    @Query("SELECT * FROM tbl_organisation WHERE id = :id")
+    suspend fun getOrganisationById(id: Long): OrganisationEntity?
+
+    @Update
+    suspend fun updateOrganisation(organisation: OrganisationEntity)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPerson(person: PersonEntity): Long
+
+    @Query("SELECT * FROM tbl_person WHERE id = :id")
+    suspend fun getPersonById(id: Long): PersonEntity?
+
+    @Update
+    suspend fun updatePerson(person: PersonEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertScan(scan: ScanEntity): Long
