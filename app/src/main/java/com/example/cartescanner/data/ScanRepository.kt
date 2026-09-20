@@ -44,6 +44,7 @@ class ScanRepository(private val database: AppDatabase) {
                     location = null,
                     twitter = null,
                     whatsapp = null,
+                    instagram = null,
                     facebook = null,
                     others = null,
                     qrCodeText = qrCode

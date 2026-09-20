@@ -9,5 +9,7 @@
     <!--
    <include domain="sharedpref" path="."/>
    <exclude domain="sharedpref" path="device.xml"/>
+   < Exclut le fichier EncryptedSharedPreferences de la sauvegarde Cloud -->
+    <exclude domain="sharedpref" path="secure_scanner_prefs.xml" />
 -->
 </full-backup-content>

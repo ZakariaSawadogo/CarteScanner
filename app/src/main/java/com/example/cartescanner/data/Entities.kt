@@ -28,6 +28,7 @@ data class ContactEntity(
     val location: String?,
     val twitter: String?,
     val whatsapp: String?,
+    val instagram: String?,
     val facebook: String?,
     val others: String?,
     val qrCodeText: String?

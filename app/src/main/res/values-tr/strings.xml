@@ -1,0 +1,41 @@
+<resources>
+    <string name="app_name">CardScan AI</string>
+    <string name="nav_home">Ana Sayfa</string>
+    <string name="nav_list">Taranan Kartlar</string>
+    <string name="nav_queue">İşlem Bekleyenler</string>
+    <string name="nav_settings">Ayarlar</string>
+    <string name="dashboard_quick_actions">Hızlı İşlemler</string>
+    <string name="dashboard_btn_scan">Tara</string>
+    <string name="dashboard_btn_import">Fotoğraf Ekle</string>
+    <string name="dashboard_recent">Son Eklenenler</string>
+    <string name="settings_ai_title">Yapay Zeka</string>
+    <string name="settings_api_key">Groq API Anahtarı</string>
+    <string name="settings_btn_save">Anahtarı Kaydet</string>
+    <string name="settings_appearance_title">Görünüm</string>
+    <string name="settings_theme_system">Sistem Teması</string>
+    <string name="settings_theme_light">Açık</string>
+    <string name="settings_theme_dark">Koyu</string>
+    <string name="settings_language_title">Dil</string>
+    <string name="settings_lang_system">Sistem Dili</string>
+    <string name="settings_lang_en">English (İngilizce)</string>
+    <string name="settings_lang_tr">Türkçe</string>
+    <string name="result_title">Çıkarılan Kişi</string>
+    <string name="result_name">Ad</string>
+    <string name="result_surname">Soyad</string>
+    <string name="result_org">Şirket</string>
+    <string name="result_position">Pozisyon</string>
+    <string name="result_phone">Telefon</string>
+    <string name="result_email">E-posta</string>
+    <string name="result_linkedin">LinkedIn (OSINT ile bulundu)</string>
+    <string name="result_ai_loading">OSINT araması yapılıyor...</string>
+    <string name="toast_key_saved">Anahtar güvenle kaydedildi</string>
+    <string name="toast_key_empty">Anahtar boş olamaz</string>
+    <!-- Remplace l'ancien par : -->
+    <string name="result_btn_save">Kaydet</string>
+    <string name="result_btn_export">Rehbere Ekle</string>
+
+    <string name="result_twitter">Twitter / X</string>
+    <string name="result_facebook">Facebook</string>
+    <string name="result_location">Adresse / Localisation</string>
+    <string name="result_instagram">Instagram</string>
+</resources>

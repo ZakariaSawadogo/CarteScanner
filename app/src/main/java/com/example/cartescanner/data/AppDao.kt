@@ -5,6 +5,20 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
+
+/**
+ * DTO pour l'affichage de l'historique dans la liste.
+ */
+data class ScanHistoryItem(
+    val scanId: Long,
+    val name: String?,
+    val surname: String?,
+    val organisationName: String?,
+    val phone: String?,
+    val linkedin: String?
+)
+
 
 /**
  * Interface d'acces aux donnees (DAO) pour manipuler les entites de la base de donnees locale.
@@ -56,4 +70,42 @@ interface AppDao {
 
     @Query("SELECT * FROM tbl_scan WHERE image_id = :imageId")
     suspend fun getScanByImageId(imageId: Long): ScanEntity?
+
+    @Query("""
+        SELECT 
+            s.id AS scanId,
+            p.name AS name,
+            p.surname AS surname,
+            o.organisation_name AS organisationName,
+            c.tel AS phone,
+            c.linkedin AS linkedin
+        FROM tbl_scan s
+        LEFT JOIN tbl_person p ON s.person_id = p.id
+        LEFT JOIN tbl_organisation o ON s.organisation_id = o.id
+        LEFT JOIN tbl_contact c ON p.contact_id = c.id OR o.contact_id = c.id
+        GROUP BY s.id
+        ORDER BY s.id DESC
+    """)
+    fun getAllScansFlow(): Flow<List<ScanHistoryItem>>
+
+    @Query("SELECT * FROM tbl_image WHERE id = :id")
+    fun observeImageById(id: Long): Flow<ImageEntity?>
+
+    @Query("""
+        SELECT 
+            s.id AS scanId,
+            p.name AS name,
+            p.surname AS surname,
+            o.organisation_name AS organisationName,
+            c.tel AS phone,
+            c.linkedin AS linkedin
+        FROM tbl_scan s
+        LEFT JOIN tbl_person p ON s.person_id = p.id
+        LEFT JOIN tbl_organisation o ON s.organisation_id = o.id
+        LEFT JOIN tbl_contact c ON p.contact_id = c.id OR o.contact_id = c.id
+        INNER JOIN tbl_image i ON s.image_id = i.id
+        WHERE i.process_completed = 0
+        ORDER BY s.id DESC
+    """)
+    fun getPendingScansFlow(): Flow<List<ScanHistoryItem>>
 }

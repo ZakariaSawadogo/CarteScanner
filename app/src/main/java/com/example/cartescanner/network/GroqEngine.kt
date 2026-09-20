@@ -17,10 +17,13 @@ import okhttp3.RequestBody.Companion.toRequestBody
  * @property name Prenom du contact.
  * @property surname Nom de famille du contact.
  * @property orgName Nom de l'entreprise ou de l'organisation.
+ * @property position Poste occupe par le contact.
  * @property tel Numero de telephone privilegie.
  * @property email Adresse email.
  * @property linkedin Lien vers le profil LinkedIn.
  * @property twitter Lien vers le profil Twitter/X.
+ * @property facebook Lien vers le profil Facebook.
+ * @property instagram Lien vers le profil Instagram.
  * @property location Localisation geographique.
  * @property others Informations complementaires (ex: poste, notes).
  */
@@ -33,6 +36,8 @@ data class AiEnrichedData(
     val email: String?,
     val linkedin: String?,
     val twitter: String?,
+    val facebook: String?,
+    val instagram: String?,
     val location: String?,
     val others: String?
 )
@@ -50,6 +55,8 @@ private data class RawAiEnrichedData(
     val email: String?,
     val linkedin: String?,
     val twitter: String?,
+    val facebook: String?,
+    val instagram: String?,
     val location: String?,
     val others: JsonElement?
 )
@@ -116,16 +123,16 @@ class GroqEngine(private val client: OkHttpClient, private val apiKey: String) {
             
             REGLES METIER STRICTES :
             - name / surname : Utilise le web pour corriger les erreurs de l'OCR.
-            - position : Identifie la position de l'individu dans l'organisation, s'il ne s'agit pas d'individu null.
+            - position : Identifie la position de l'individu dans l'organisation, s'il ne s'agit pas d'un individu null.
             - tel : S'il y a plusieurs numeros, privilegie le numero mobile ou la ligne directe.
             - email : Assure-toi que la syntaxe est valide.
-            - linkedin / twitter : Doit etre une URL valide.
+            - linkedin / twitter / facebook / instagram : Doit etre une URL valide. Cherche activement ces liens dans les extraits Web fournis. Renvoie UNIQUEMENT l'URL complete.
             - location : Isole la ville, le pays ou l'adresse la plus precise.
             - others : Une seule phrase courte contenant des informations cruciales supplementaires. AUCUN objet imbrique.
             
             CONTRAINTE DE SORTIE :
             Renvoie STRICTEMENT un objet JSON plat. 
-            Si une donnee est introuvable dans les 3 sources, assigne la valeur null.
+            Si une donnee est introuvable dans les 3 sources, assigne la valeur null (sans guillemets).
             
             FORMAT ATTENDU :
             {
@@ -137,13 +144,15 @@ class GroqEngine(private val client: OkHttpClient, private val apiKey: String) {
                 "email": "email ou null",
                 "linkedin": "url ou null",
                 "twitter": "url ou null",
+                "facebook": "url ou null",
+                "instagram": "url ou null",
                 "location": "lieu ou null",
                 "others": "chaine courte ou null"
             }
         """.trimIndent()
 
         val requestBody = GroqRequest(
-            model = "openai/gpt-oss-20b",
+            model = "llama3-8b-8192",
             messages = listOf(
                 Message(role = "system", content = "Tu es un parseur de donnees JSON strict. Tu ne renvoies que du JSON plat."),
                 Message(role = "user", content = prompt)
@@ -190,6 +199,8 @@ class GroqEngine(private val client: OkHttpClient, private val apiKey: String) {
                     email = rawData.email,
                     linkedin = rawData.linkedin,
                     twitter = rawData.twitter,
+                    facebook = rawData.facebook,
+                    instagram = rawData.instagram,
                     location = rawData.location,
                     others = formattedOthers
                 )

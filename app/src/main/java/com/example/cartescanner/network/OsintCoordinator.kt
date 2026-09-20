@@ -44,11 +44,11 @@ class OsintCoordinator(
 
         val query = when {
             cleanOrg.isNotBlank() && (cleanName.isNotBlank() || cleanSurname.isNotBlank()) ->
-                "$cleanName $cleanSurname $cleanOrg".trim()
+                "$cleanName $cleanSurname $cleanOrg linkedin OR twitter OR instagram OR facebook".trim()
             cleanOrg.isNotBlank() ->
                 cleanOrg
             else ->
-                "$cleanName $cleanSurname".trim()
+                "$cleanName $cleanSurname linkedin OR twitter".trim()
         }
 
         var snippets = ""
@@ -85,6 +85,8 @@ class OsintCoordinator(
                 email = enrichedData.email ?: contact.email,
                 linkedin = enrichedData.linkedin ?: contact.linkedin,
                 twitter = enrichedData.twitter ?: contact.twitter,
+                facebook = enrichedData.facebook ?: contact.facebook,
+                instagram = enrichedData.instagram ?: contact.instagram,
                 location = enrichedData.location ?: contact.location,
                 others = enrichedData.others ?: contact.others
             )
