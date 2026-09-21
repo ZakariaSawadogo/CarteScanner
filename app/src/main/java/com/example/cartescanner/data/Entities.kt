@@ -6,7 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
 /**
- * Représente l'image scannée stockée localement et son état de traitement.
+ * Represente l'image scannee stockee localement et son etat de traitement.
  */
 @Entity(tableName = "tbl_image")
 data class ImageEntity(
@@ -23,16 +23,19 @@ data class ImageEntity(
 data class ContactEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val tel: String?,
+    val email: String?,
     val linkedin: String?,
     val location: String?,
     val twitter: String?,
     val whatsapp: String?,
+    val instagram: String?,
     val facebook: String?,
-    val others: String?
+    val others: String?,
+    val qrCodeText: String?
 )
 
 /**
- * Représente l'organisation ou l'entreprise figurant sur le scan.
+ * Represente l'organisation ou l'entreprise figurant sur le scan.
  */
 @Entity(
     tableName = "tbl_organisation",
@@ -53,7 +56,7 @@ data class OrganisationEntity(
 )
 
 /**
- * Représente l'individu identifié sur la carte de visite.
+ * Represente l'individu identifie sur la carte de visite.
  */
 @Entity(
     tableName = "tbl_person",
@@ -82,7 +85,7 @@ data class PersonEntity(
 )
 
 /**
- * Entité de liaison centrale regroupant toutes les données d'un scan spécifique.
+ * Entite de liaison centrale regroupant toutes les donnees d'un scan specifique.
  */
 @Entity(
     tableName = "tbl_scan",
@@ -96,5 +99,6 @@ data class ScanEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(name = "image_id") val imageId: Long,
     @ColumnInfo(name = "person_id") val personId: Long?,
-    @ColumnInfo(name = "organisation_id") val organisationId: Long?
+    @ColumnInfo(name = "organisation_id") val organisationId: Long?,
+    @ColumnInfo(name = "raw_text") val rawText: String?
 )

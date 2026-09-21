@@ -1,0 +1,30 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true" android:background="?android:attr/colorBackground">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
+        <!--  Section IA  -->
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/settings_ai_title" android:textSize="20sp" android:textStyle="bold" android:textColor="?attr/colorPrimary" android:layout_marginBottom="16dp"/>
+        <!--  NOUVEAU BLOC : Le label + Le voyant  -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/settings_api_key" android:textSize="16sp" android:textStyle="bold" android:textColor="?android:attr/textColorPrimary"/>
+            <ImageView android:id="@+id/indicatorApiKey" android:layout_width="16dp" android:layout_height="16dp" android:layout_marginStart="8dp" android:src="@android:drawable/presence_away"/>
+            <!--  Jaune par défaut  -->
+        </LinearLayout>
+        <com.google.android.material.textfield.TextInputLayout android:id="@+id/layoutGroqApiKey" style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" android:hint="gsk_..." app:boxBackgroundMode="outline" app:boxStrokeColor="?attr/colorPrimary" app:hintTextColor="?attr/colorPrimary" app:endIconMode="password_toggle">
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/editApiKey" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textPassword" android:textSize="16sp" android:textColor="?android:attr/textColorPrimary" android:textColorHint="?android:attr/textColorSecondary" android:background="@null"/>
+        </com.google.android.material.textfield.TextInputLayout>
+        <Button android:id="@+id/btnSaveSettings" android:layout_width="match_parent" android:layout_height="54dp" android:text="@string/settings_btn_save" android:textSize="16sp" android:textStyle="bold" android:layout_marginBottom="36dp"/>
+        <!--  Section Langue  -->
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/settings_language_title" android:textSize="20sp" android:textStyle="bold" android:textColor="?attr/colorPrimary" android:layout_marginBottom="8dp"/>
+        <RadioGroup android:id="@+id/radioGroupLanguage" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="24dp" android:orientation="vertical">
+            <RadioButton android:id="@+id/radioLangSystem" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/settings_lang_system" android:textSize="16sp" android:paddingVertical="8dp"/>
+            <RadioButton android:id="@+id/radioLangEn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/settings_lang_en" android:textSize="16sp" android:paddingVertical="8dp"/>
+            <RadioButton android:id="@+id/radioLangTr" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/settings_lang_tr" android:textSize="16sp" android:paddingVertical="8dp"/>
+        </RadioGroup>
+        <!--  Section Apparence  -->
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/settings_appearance_title" android:textSize="20sp" android:textStyle="bold" android:textColor="?attr/colorPrimary" android:layout_marginBottom="8dp"/>
+        <RadioGroup android:id="@+id/radioGroupTheme" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+            <RadioButton android:id="@+id/radioThemeSystem" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/settings_theme_system" android:textSize="16sp" android:paddingVertical="8dp"/>
+            <RadioButton android:id="@+id/radioThemeLight" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/settings_theme_light" android:textSize="16sp" android:paddingVertical="8dp"/>
+            <RadioButton android:id="@+id/radioThemeDark" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/settings_theme_dark" android:textSize="16sp" android:paddingVertical="8dp"/>
+        </RadioGroup>
+    </LinearLayout>
+</ScrollView>
